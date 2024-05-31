@@ -14,17 +14,20 @@ app = FastAPI()
 
 @app.get("/patients")
 def get_patients()-> list:
-    return patient_list
+    p = patient_list
+    return p
 
 @app.post("/patients")
 def create_patient(patient: Patient):
-    patient_list.append(patient)
+    patient_list.append(patient.model_dump())
     return patient
 
 @app.put("/patients/{first_name}")
 def update_patient(first_name, patient: Patient):
     for p in patient_list:
-        if p["first_name"] == first_name:
+        if p["first_name"] != first_name:
+            return("Patient Cant be found")
+        elif p["first_name"] == first_name:
             p.update(patient.model_dump())
             return p
         
@@ -32,5 +35,6 @@ def update_patient(first_name, patient: Patient):
 def delete_patient(first_name):
     for p in patient_list:
         if p["first_name"] == first_name:
-            patient_list.remove(p)
             return p
+        else:
+            return("Patient Cant be found")
